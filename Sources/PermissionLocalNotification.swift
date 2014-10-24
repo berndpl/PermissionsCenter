@@ -18,7 +18,10 @@ class PermissionLocalNotification: NSObject {
         var requiredStatus:UIUserNotificationType = UIUserNotificationType.Alert
 
         var permission:Permission? = PermissionsCenter.shared.permissionOfType(PermissionType.LocalNotifications)
-
+        if permission?.showRequestWithoutButton == true && permission?.granted == false {
+            PermissionLocalNotification.request()
+        }
+        
         if currentStatus.types == requiredStatus {
             //println("\t [LocalNotification] Granted \(currentStatus.types)")
             //println ("\(permission!.simpleDescription())")

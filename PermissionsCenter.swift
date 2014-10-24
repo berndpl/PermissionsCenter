@@ -6,9 +6,22 @@
 //  Copyright (c) 2014 Bernd Plontsch. All rights reserved.
 //
 
+// Usage
+
+/*
+PermissionsCenter.shared.setup(view)
+PermissionsCenter.shared.addPermission(PermissionType.LocalNotifications) //Local Notifaciton last/first to show, because no callback
+PermissionsCenter.shared.addPermission(PermissionType.LocationServiceAlways)
+PermissionsCenter.shared.checkAllPermissions()
+PermissionsCenter.shared.actOnNextMissingPermission()
+println("<Permissions> All Granted? \(PermissionsCenter.shared.allGranted())")
+*/
+
 import UIKit
 
 class PermissionsCenter: NSObject, PermissionButtonDelegate {
+    
+    let logSwitch:Bool = false
     
     var viewForButton:UIView?
     
@@ -26,7 +39,7 @@ class PermissionsCenter: NSObject, PermissionButtonDelegate {
     
     override init() {
         super.init()
-        println("[PermissionsCenter] Init")
+        Logger.log(logSwitch, logMessage: "[PermissionsCenter] Init")
         //BUTTON
         permissionsButton = PermissionButton.buttonWithType(UIButtonType.System) as? PermissionButton
 
@@ -44,7 +57,7 @@ class PermissionsCenter: NSObject, PermissionButtonDelegate {
     }
     
     func addPermission(permissionType:PermissionType) {
-        println("[Permissions] Adding (\(Permission.typeAsString(permissionType)))")
+        Logger.log(logSwitch, logMessage: "[Permissions] Adding (\(Permission.typeAsString(permissionType)))")
         var permissionToAdd:Permission?
         
         switch permissionType {
@@ -99,7 +112,7 @@ class PermissionsCenter: NSObject, PermissionButtonDelegate {
     }
     
     func checkAllPermissions () {
-        println("[Permissions] Check All")
+        Logger.log(logSwitch, logMessage: "[Permissions] Check All")
         for item:AnyObject in permissions {
             var permission = item as Permission
             println("-- \(Permission.typeAsString(permission.type)) > \(check(permission.type)) G (\(permission.granted)) R (\(permission.requested))")
@@ -154,26 +167,26 @@ class PermissionsCenter: NSObject, PermissionButtonDelegate {
         
         permissionsButton?.setup(viewForButton!, permission: permission, delegate: self)
         
-        println("[Permissions] Check For: \(permission.simpleDescription())")
+        Logger.log(logSwitch, logMessage: "[Permissions] Check For: \(permission.simpleDescription())")
         
         if permission.granted == nil {
-            self.viewForButton?.backgroundColor = UIColor.orangeColor()
+            //self.viewForButton?.backgroundColor = UIColor.orangeColor()
             if viewForButton != nil {
                 permissionsButton?.show(permission.buttonText, target: self, actionSelector: permission.buttonTargetSelector)
             }
         } else {
             if permission.granted == false { // REQUESTED + NOT GRANTED -> Request
                 if permission.requested == false {
-                    self.viewForButton?.backgroundColor = UIColor.orangeColor()
+                    //self.viewForButton?.backgroundColor = UIColor.orangeColor()
                     if viewForButton != nil {
-                        println("REQUEST")
+                        Logger.log(logSwitch, logMessage: "REQUEST")
                         permissionsButton?.show(permission.buttonText, target: self, actionSelector: permission.buttonTargetSelector)
                     }
                 }
                 if permission.requested == true {
-                    self.viewForButton?.backgroundColor = UIColor.purpleColor()
+                    //self.viewForButton = UIColor.purpleColor()
                     if viewForButton != nil {
-                        println("SETTINGS")
+                        Logger.log(logSwitch, logMessage: "SETTINGS")
                         permissionsButton?.show(permission.buttonTextSettings, target: self, actionSelector: permission.buttonTargetSelectorSettings)
                     }
                 }
@@ -210,21 +223,23 @@ class PermissionsCenter: NSObject, PermissionButtonDelegate {
         */
         for item:AnyObject in permissionsMissing {
             let permission = item as Permission
-            println("\t [Missing] \(permission.simpleDescription())")
+            Logger.log(logSwitch, logMessage: "\t [Missing] \(permission.simpleDescription())")
         }
         
     }
     
     func allGranted()->Bool{
         if permissionsMissing.count > 0 {
+            Logger.log(logSwitch, logMessage: "[Permissions] All Granted: NO")
             return false
         } else {
+            Logger.log(logSwitch, logMessage: "[Permissions] All Granted: YES")
             return true
         }
     }
     
     func willEnterForeground() {
-        println("======= FOREGROUND Permissions \(permissions.count) Missing \(permissionsMissing.count)=======")
+        Logger.log(logSwitch, logMessage: "======= FOREGROUND Permissions \(permissions.count) Missing \(permissionsMissing.count)=======")
         permissionsButton?.hide()
         PermissionsCenter.shared.checkAllPermissions()
         PermissionsCenter.shared.actOnNextMissingPermission()

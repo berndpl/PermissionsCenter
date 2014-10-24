@@ -13,6 +13,11 @@ protocol PermissionButtonDelegate {
 
 class PermissionButton: UIButton {
 
+    let styleBorder:Bool = false
+    let styleBorderWidth:CGFloat = 4.0
+    let styleFont:UIFont = UIFont(name: "AvenirNext-Heavy", size: 18.0)!
+    let styleBackgroundColor:UIColor = UIColor.blackColor()
+    
     var delegate:PermissionButtonDelegate?
     
     var permission:Permission?
@@ -22,16 +27,23 @@ class PermissionButton: UIButton {
         self.delegate = delegate
         self.permission = permission
         setTranslatesAutoresizingMaskIntoConstraints(false)
-        layer.cornerRadius = 15.0
-        layer.borderColor = UIColor.lightGrayColor().CGColor
-        layer.borderWidth = Settings.styleLineWidth()/2.0
-        titleLabel?.font = UIFont.defaultFontWithSize(Settings.styleCalculatedLineSize(15.0, referenceView: interfaceView))
+        
+        //STYLE BUTTON
+        
+        if styleBorder == true {
+            layer.borderWidth = styleBorderWidth
+            layer.cornerRadius = 15.0
+            layer.borderColor = UIColor.lightGrayColor().CGColor
+            backgroundColor = styleBackgroundColor
+        }
+        titleLabel?.font = styleFont
         setTitleColor(UIColor.lightGrayColor(), forState: UIControlState.Normal)
         contentEdgeInsets = UIEdgeInsetsMake(0, 15, 0, 15)
         
+        //CENTER BUTTON
+        
         interfaceView.addSubview(self)
         interfaceView.bringSubviewToFront(self)
-        backgroundColor = UIColor.nextsDarkColorWithAlpha(0.5)
         var viewsDictionary:NSDictionary  = ["permissionsButton":self]
         
         interfaceView.addConstraint(NSLayoutConstraint(item: self,
@@ -42,7 +54,15 @@ class PermissionButton: UIButton {
             multiplier: 1,
             constant: 0))
         
-        interfaceView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-50-[permissionsButton(50)]", options: nil, metrics: nil, views: viewsDictionary))
+        interfaceView.addConstraint(NSLayoutConstraint(item: self,
+            attribute: NSLayoutAttribute.CenterY,
+            relatedBy: NSLayoutRelation.Equal,
+            toItem: interfaceView,
+            attribute: NSLayoutAttribute.CenterY,
+            multiplier: 1,
+            constant: 0))
+        
+        interfaceView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[permissionsButton(50)]", options: nil, metrics: nil, views: viewsDictionary))
         
         self.hidden = true
     }

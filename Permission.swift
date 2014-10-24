@@ -17,6 +17,7 @@ enum PermissionType {
 }
 
 class Permission: NSObject {
+    var showRequestWithoutButton:Bool = false
     var granted:Bool?
     var requested:Bool = false
     var type:PermissionType = PermissionType.None
@@ -32,6 +33,9 @@ class Permission: NSObject {
         self.buttonTextSettings = buttonTextSettings
         self.buttonTargetSelector = buttonTargetSelector
         self.buttonTargetSelectorSettings = buttonTargetSelectorSettings
+        if type == PermissionType.LocalNotifications {
+            showRequestWithoutButton = true
+        }
     }
     
     func simpleDescription()->NSString{

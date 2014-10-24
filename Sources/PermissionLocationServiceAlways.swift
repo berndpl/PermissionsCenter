@@ -75,4 +75,18 @@ class PermissionLocationServiceAlways: NSObject, CLLocationManagerDelegate {
         UIApplication.sharedApplication().openURL(NSURL(string: UIApplicationOpenSettingsURLString)!)
     }
     
+    
+    func stringForCLAuthorizationStatus(status:CLAuthorizationStatus)->NSString{
+        var authorizationStatus:NSString = "not set"
+        switch status {
+        case .Authorized: authorizationStatus = "Authorized"
+        case .AuthorizedWhenInUse: authorizationStatus = "Authorized When In Use"
+        case .Denied: authorizationStatus = "Denied"
+        case .NotDetermined: authorizationStatus = "Not Determined"
+        case .Restricted: authorizationStatus = "Restricted"
+        default: authorizationStatus = "no"
+        }
+        return authorizationStatus
+    }
+    
 }

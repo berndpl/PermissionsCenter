@@ -9,17 +9,25 @@
 import UIKit
 
 class PermissionLocalNotification: NSObject {
-
-    //CHECK
-    //REQUEST
     
-    class func check()->Bool{
-        var currentStatus = UIApplication.sharedApplication().currentUserNotificationSettings()
-        var requiredStatus:UIUserNotificationType = UIUserNotificationType.Alert
+    class var shared : PermissionLocalNotification {
+        struct Singleton {
+            static let instance = PermissionLocalNotification()
+        }
+        return Singleton.instance
+    }
+    
+    override init() {
+        super.init()
+    }
+    
+    func check()->Bool{
+        var currentStatus:UIUserNotificationSettings = UIApplication.sharedApplication().currentUserNotificationSettings()
+        var requiredStatus:UIUserNotificationType = UIUserNotificationType.Badge | UIUserNotificationType.Sound | UIUserNotificationType.Alert
 
         var permission:Permission? = PermissionsCenter.shared.permissionOfType(PermissionType.LocalNotifications)
         if permission?.showRequestWithoutButton == true && permission?.granted == false {
-            PermissionLocalNotification.request()
+            request()
         }
         
         if currentStatus.types == requiredStatus {
@@ -38,14 +46,15 @@ class PermissionLocalNotification: NSObject {
         }
     }
     
-    class func request(){
+    func request(){
         println("\t [LocalNotification] Request")
-        var notificationSetting:UIUserNotificationSettings = UIUserNotificationSettings(forTypes: (UIUserNotificationType.Alert), categories: nil)
-        UIApplication.sharedApplication().registerUserNotificationSettings(notificationSetting)
+        var types:UIUserNotificationType = UIUserNotificationType.Badge | UIUserNotificationType.Sound | UIUserNotificationType.Alert
+        var settings:UIUserNotificationSettings = UIUserNotificationSettings(forTypes: types, categories: nil)
+        UIApplication.sharedApplication().registerUserNotificationSettings(settings)
         PermissionsCenter.shared.permissionsButton?.hide()
     }
     
-    class func requestFallback() {
+    func requestFallback() {
         println("\t [LocalNotification] Request Fallback")
         UIApplication.sharedApplication().openURL(NSURL(string: UIApplicationOpenSettingsURLString)!)
     }

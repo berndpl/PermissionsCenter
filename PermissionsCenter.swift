@@ -90,14 +90,14 @@ class PermissionsCenter: NSObject, PermissionButtonDelegate {
         simpleDescription()
         PermissionsCenter.shared.permissionOfType(PermissionType.LocalNotifications)?.requested = true
                 simpleDescription()
-        PermissionLocalNotification.request()
+        PermissionLocalNotification.shared.request()
         //permissionsButton?.hide()
         //check()
     }
     
     func requestFallbackLocalNotification() {
         UIApplication.sharedApplication().openURL(NSURL(fileURLWithPath: UIApplicationOpenSettingsURLString)!)
-        PermissionLocalNotification.requestFallback()
+        PermissionLocalNotification.shared.requestFallback()
         //permissionsButton?.hide()
         //check()
     }
@@ -140,7 +140,7 @@ class PermissionsCenter: NSObject, PermissionButtonDelegate {
     func check(permissionType:PermissionType)->Bool{
         switch permissionType {
         case .LocalNotifications:
-            return PermissionLocalNotification.check()
+            return PermissionLocalNotification.shared.check()
         case .LocationServiceAlways:
             return PermissionLocationServiceAlways.check()
         default: println("Unrecognized Check Permission Type \(permissionType)")
@@ -154,6 +154,8 @@ class PermissionsCenter: NSObject, PermissionButtonDelegate {
             let permission = permissionsMissing.lastObject as Permission
             check(permission.type)
             actOnPermissionStatus(permission)
+        } else {
+            NSNotificationCenter.defaultCenter().postNotificationName("defaultsDidChange", object: nil)
         }
     }
     
@@ -212,15 +214,6 @@ class PermissionsCenter: NSObject, PermissionButtonDelegate {
     
     func simpleDescription() {
         println("======= [Permissions] Check - Permissions \(permissions.count) Missing \(permissionsMissing.count)=======")
-        /*
-        println("======= Permission Center Status =======")
-        println ("[Permissions] Total \(permissions.count) Missing \(permissionsMissing.count)")
-        println ("[Permissions] All")
-        for item:AnyObject in permissions {
-            let permission = item as Permission
-            println("[Permissions] \(permission.simpleDescription())")
-        }
-        */
         for item:AnyObject in permissionsMissing {
             let permission = item as Permission
             Logger.log(logSwitch, logMessage: "\t [Missing] \(permission.simpleDescription())")

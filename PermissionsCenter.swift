@@ -62,19 +62,19 @@ class PermissionsCenter: NSObject, PermissionButtonDelegate {
         
         switch permissionType {
         case .LocalNotifications:
-            permissionToAdd = Permission(
+            permissionToAdd = PermissionLocalNotification(
                 type: PermissionType.LocalNotifications,
                 buttonText: "Allow Notifications",
                 buttonTextSettings: "Enable Notifications",
-                buttonTargetSelector: "requestLocalNotification",
-                buttonTargetSelectorSettings: "requestFallbackLocalNotification")
+                buttonTargetSelector: "request",
+                buttonTargetSelectorSettings: "requestFallback")
         case .LocationServiceAlways:
-            permissionToAdd = Permission(
+            permissionToAdd = PermissionLocationServiceAlways(
                 type: PermissionType.LocationServiceAlways,
                 buttonText: "Allow Ranging of iBeacons",
                 buttonTextSettings: "Enable Location Services",
-                buttonTargetSelector: "requestLocationServiceAlways",
-                buttonTargetSelectorSettings: "requestFallbackLocationServiceAlways")
+                buttonTargetSelector: "request",
+                buttonTargetSelectorSettings: "requestFallback")
         default: println("Unrecognized Permission Type \(permissionType)")
         }
         
@@ -86,30 +86,30 @@ class PermissionsCenter: NSObject, PermissionButtonDelegate {
         //check(permissionType)
     }
     
-    func requestLocalNotification() {
-        simpleDescription()
-        PermissionsCenter.shared.permissionOfType(PermissionType.LocalNotifications)?.requested = true
-                simpleDescription()
-        PermissionLocalNotification.shared.request()
-        //permissionsButton?.hide()
-        //check()
-    }
-    
-    func requestFallbackLocalNotification() {
-        UIApplication.sharedApplication().openURL(NSURL(fileURLWithPath: UIApplicationOpenSettingsURLString)!)
-        PermissionLocalNotification.shared.requestFallback()
-        //permissionsButton?.hide()
-        //check()
-    }
-    
-    func requestLocationServiceAlways(){
-        check(PermissionType.LocationServiceAlways)
-        PermissionLocationServiceAlways.shared.request()
-    }
-    
-    func requestFallbackLocationServiceAlways(){
-        PermissionLocationServiceAlways.requestFallback()
-    }
+//    func requestLocalNotification() {
+//        simpleDescription()
+//        PermissionsCenter.shared.permissionOfType(PermissionType.LocalNotifications)?.requested = true
+//                simpleDescription()
+//        PermissionLocalNotification.shared.request()
+//        //permissionsButton?.hide()
+//        //check()
+//    }
+//    
+//    func requestFallbackLocalNotification() {
+//        UIApplication.sharedApplication().openURL(NSURL(fileURLWithPath: UIApplicationOpenSettingsURLString)!)
+//        PermissionLocalNotification.shared.requestFallback()
+//        //permissionsButton?.hide()
+//        //check()
+//    }
+//    
+//    func requestLocationServiceAlways(){
+//        check(PermissionType.LocationServiceAlways)
+//        PermissionLocationServiceAlways.shared.request()
+//    }
+//    
+//    func requestFallbackLocationServiceAlways(){
+//        PermissionLocationServiceAlways.requestFallback()
+//    }
     
     func checkAllPermissions () {
         Logger.log(logSwitch, logMessage: "[Permissions] Check All")
@@ -138,14 +138,14 @@ class PermissionsCenter: NSObject, PermissionButtonDelegate {
     }
     
     func check(permissionType:PermissionType)->Bool{
-        switch permissionType {
-        case .LocalNotifications:
-            return PermissionLocalNotification.shared.check()
-        case .LocationServiceAlways:
-            return PermissionLocationServiceAlways.check()
-        default: println("Unrecognized Check Permission Type \(permissionType)")
-            return false
+        for item:AnyObject in permissions {
+          var permission = item as Permission
+            if permission.type == permissionType {
+                return permission.check()
+            }
         }
+        println("Unrecognized Permission Type to check: \(permissionType)")
+        return false
     }
     
     func actOnNextMissingPermission() {
@@ -171,25 +171,29 @@ class PermissionsCenter: NSObject, PermissionButtonDelegate {
         
         Logger.log(logSwitch, logMessage: "[Permissions] Check For: \(permission.simpleDescription())")
         
+        println("request \(permissionOfType(permission.type)?.simpleDescription())")
+
+        
         if permission.granted == nil {
             //self.viewForButton?.backgroundColor = UIColor.orangeColor()
             if viewForButton != nil {
-                permissionsButton?.show(permission.buttonText, target: self, actionSelector: permission.buttonTargetSelector)
+                permissionsButton?.show(permission.buttonText, target: permission, actionSelector: permission.buttonTargetSelector)
             }
         } else {
             if permission.granted == false { // REQUESTED + NOT GRANTED -> Request
-                if permission.requested == false {
+                
+                    if permission.requested == false {
                     //self.viewForButton?.backgroundColor = UIColor.orangeColor()
                     if viewForButton != nil {
                         Logger.log(logSwitch, logMessage: "REQUEST")
-                        permissionsButton?.show(permission.buttonText, target: self, actionSelector: permission.buttonTargetSelector)
+                        permissionsButton?.show(permission.buttonText, target:permission, actionSelector: permission.buttonTargetSelector)
                     }
                 }
                 if permission.requested == true {
                     //self.viewForButton = UIColor.purpleColor()
                     if viewForButton != nil {
                         Logger.log(logSwitch, logMessage: "SETTINGS")
-                        permissionsButton?.show(permission.buttonTextSettings, target: self, actionSelector: permission.buttonTargetSelectorSettings)
+                        permissionsButton?.show(permission.buttonTextSettings, target:permission, actionSelector: permission.buttonTargetSelectorSettings)
                     }
                 }
             } else {

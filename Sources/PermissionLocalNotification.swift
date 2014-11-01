@@ -8,26 +8,21 @@
 
 import UIKit
 
-class PermissionLocalNotification: NSObject {
-    
-    class var shared : PermissionLocalNotification {
-        struct Singleton {
-            static let instance = PermissionLocalNotification()
-        }
-        return Singleton.instance
-    }
-    
+class PermissionLocalNotification: Permission {
+        
     override init() {
         super.init()
     }
     
-    func check()->Bool{
+    override func check()->Bool{
         var currentStatus:UIUserNotificationSettings = UIApplication.sharedApplication().currentUserNotificationSettings()
         var requiredStatus:UIUserNotificationType = UIUserNotificationType.Badge | UIUserNotificationType.Sound | UIUserNotificationType.Alert
 
         var permission:Permission? = PermissionsCenter.shared.permissionOfType(PermissionType.LocalNotifications)
+        
+        //mark: to do work with delegate instead
         if permission?.showRequestWithoutButton == true && permission?.granted == false {
-            request()
+            //request()
         }
         
         if currentStatus.types == requiredStatus {
@@ -46,7 +41,7 @@ class PermissionLocalNotification: NSObject {
         }
     }
     
-    func request(){
+    override func request(){
         println("\t [LocalNotification] Request")
         var types:UIUserNotificationType = UIUserNotificationType.Badge | UIUserNotificationType.Sound | UIUserNotificationType.Alert
         var settings:UIUserNotificationSettings = UIUserNotificationSettings(forTypes: types, categories: nil)
@@ -54,7 +49,7 @@ class PermissionLocalNotification: NSObject {
         PermissionsCenter.shared.permissionsButton?.hide()
     }
     
-    func requestFallback() {
+    override func requestFallback() {
         println("\t [LocalNotification] Request Fallback")
         UIApplication.sharedApplication().openURL(NSURL(string: UIApplicationOpenSettingsURLString)!)
     }

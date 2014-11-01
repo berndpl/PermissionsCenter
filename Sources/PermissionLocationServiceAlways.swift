@@ -9,19 +9,19 @@
 import UIKit
 import CoreLocation
 
-class PermissionLocationServiceAlways: NSObject, CLLocationManagerDelegate {
+class PermissionLocationServiceAlways: Permission, CLLocationManagerDelegate {
 
     var locationManager:CLLocationManager = CLLocationManager()
     
     //CHECK
     //REQUEST
     
-    class var shared : PermissionLocationServiceAlways {
-        struct Singleton {
-            static let instance = PermissionLocationServiceAlways()
-        }
-        return Singleton.instance
-    }
+//    class var shared : PermissionLocationServiceAlways {
+//        struct Singleton {
+//            static let instance = PermissionLocationServiceAlways()
+//        }
+//        return Singleton.instance
+//    }
     
     override init() {
         super.init()
@@ -31,11 +31,11 @@ class PermissionLocationServiceAlways: NSObject, CLLocationManagerDelegate {
     func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
         println("Location Manager - did change authorizatio state")
         PermissionsCenter.shared.permissionsButton?.hide()
-        PermissionLocationServiceAlways.check()
+        check()
         PermissionsCenter.shared.actOnNextMissingPermission()
     }
     
-    class func check()->Bool {
+    override func check()->Bool {
         
         var currentStatus:CLAuthorizationStatus = CLLocationManager.authorizationStatus()
         var requiredStatus:CLAuthorizationStatus = CLAuthorizationStatus.Authorized
@@ -64,13 +64,13 @@ class PermissionLocationServiceAlways: NSObject, CLLocationManagerDelegate {
         }
     }
     
-    func request(){
+    override func request(){
         println("\t [LocationServiceAlways] Request")
         locationManager.requestAlwaysAuthorization()
         PermissionsCenter.shared.permissionsButton?.hide()
     }
     
-    class func requestFallback(){
+    override func requestFallback(){
         println("\t [LocationServiceAlways] Request Fallback")
         UIApplication.sharedApplication().openURL(NSURL(string: UIApplicationOpenSettingsURLString)!)
     }

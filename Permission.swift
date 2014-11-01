@@ -17,6 +17,7 @@ enum PermissionType {
 }
 
 class Permission: NSObject {
+    
     var showRequestWithoutButton:Bool = false
     var granted:Bool?
     var requested:Bool = false
@@ -36,6 +37,19 @@ class Permission: NSObject {
         if type == PermissionType.LocalNotifications {
             showRequestWithoutButton = true
         }
+    }
+    
+    func check()->Bool {
+        println("[Permission] not implemented: check")
+        return false
+    }
+    
+    func request() {
+        println("[Permission] not implemented: request")
+    }
+    
+    func requestFallback(){
+        println("[Permission] not implemented: requestFallback")
     }
     
     func simpleDescription()->NSString{

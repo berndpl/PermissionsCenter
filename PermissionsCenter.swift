@@ -21,7 +21,7 @@ import UIKit
 
 class PermissionsCenter: NSObject, PermissionButtonDelegate {
     
-    let logSwitch:Bool = false
+    let logSwitch:Bool = true
     
     var viewForButton:UIView?
     
@@ -232,6 +232,25 @@ class PermissionsCenter: NSObject, PermissionButtonDelegate {
         } else {
             Logger.log(logSwitch, logMessage: "[Permissions] All Granted: YES")
             return true
+        }
+    }
+    
+    func updateState(type:PermissionType,notificationSettings: UIUserNotificationSettings){
+        println ("Update localNotificationSettings: \(notificationSettings)")
+        // mark: to do check types more specifically than nil
+        if notificationSettings.types == nil {
+            println ("NIL")
+            var permission:Permission? = permissionOfType(PermissionType.LocalNotifications)
+            println ("set \(permission?.simpleDescription())")
+            if permission != nil {
+                permission!.requested = true
+                            println ("set \(permission?.simpleDescription())")
+                //actOnPermissionStatus(permission!)
+                actOnNextMissingPermission()
+            }
+            
+            //PermissionsCenter.shared.permissionOfType(PermissionType.LocalNotifications)?.check()
+            //actOnNextMissingPermission()
         }
     }
     

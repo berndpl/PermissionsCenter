@@ -29,12 +29,12 @@ class PermissionLocalNotification: Permission {
             //println("\t [LocalNotification] Granted \(currentStatus.types)")
             //println ("\(permission!.simpleDescription())")
             PermissionsCenter.shared.permissionOfType(PermissionType.LocalNotifications)?.granted = true
-            PermissionsCenter.shared.permissionOfType(PermissionType.LocalNotifications)?.requested = true
+            //PermissionsCenter.shared.permissionOfType(PermissionType.LocalNotifications)?.requested = false
             PermissionsCenter.shared.permissionsMissing.removeObject(permission!) //REMOVE GRANTED
             return true
         } else {
             PermissionsCenter.shared.permissionOfType(PermissionType.LocalNotifications)?.granted = false
-            PermissionsCenter.shared.permissionOfType(PermissionType.LocalNotifications)?.requested = true
+            //PermissionsCenter.shared.permissionOfType(PermissionType.LocalNotifications)?.requested = false
             //println ("\t [LocalNotification] Missing \(currentStatus.types)")
             //println ("\(permission!.simpleDescription())")
             return false
@@ -46,7 +46,7 @@ class PermissionLocalNotification: Permission {
         var types:UIUserNotificationType = UIUserNotificationType.Badge | UIUserNotificationType.Sound | UIUserNotificationType.Alert
         var settings:UIUserNotificationSettings = UIUserNotificationSettings(forTypes: types, categories: nil)
         UIApplication.sharedApplication().registerUserNotificationSettings(settings)
-        PermissionsCenter.shared.permissionsButton?.hide()
+        //PermissionsCenter.shared.permissionsButton?.hide()
     }
     
     override func requestFallback() {

@@ -17,9 +17,16 @@ class PermissionButton: UIButton {
     let styleBorderWidth:CGFloat = 4.0
     let styleFont:UIFont = UIFont(name: "AvenirNext-Heavy", size: 18.0)!
     let styleBackgroundColor:UIColor = UIColor.blackColor()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        // Initialization code
+        
+    }
     
-    
-    
+    required init(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
     //var buttonActivity : UIActivityIndicatorView = UIActivityIndicatorView(frame: CGRectMake(0,0, 50, 50)) as UIActivityIndicatorView
     
     var delegate:PermissionButtonDelegate?
@@ -68,43 +75,16 @@ class PermissionButton: UIButton {
         
         backgroundView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[permissionsButton(50)]", options: nil, metrics: nil, views: viewsDictionary))
         
-//        var buttonActivity:UIActivityIndicatorView = UIActivityIndicatorView()
-//        buttonActivity.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
-//        backgroundView.addSubview(buttonActivity)
-//        buttonActivity.startAnimating()
-
-     //   var activityButtonConstraint:NSLayoutConstraint = NSLayoutConstraint(
-        
-//        NSLayoutConstraint *myConstraint =[NSLayoutConstraint
-//            constraintWithItem:mylabel
-//            attribute:NSLayoutAttributeCenterY
-//            relatedBy:NSLayoutRelationEqual
-//            toItem:superview
-//            attribute:NSLayoutAttributeCenterY
-//            multiplier:1.0
-//            constant:0];
-//        
-//        [superview addConstraint:myConstraint];
-//        
-//        myConstraint =[NSLayoutConstraint
-//            constraintWithItem:mylabel
-//            attribute:NSLayoutAttributeCenterX
-//            relatedBy:NSLayoutRelationEqual
-//            toItem:superview
-//            attribute:NSLayoutAttributeCenterX
-//            multiplier:1.0
-//            constant:0];
-//        
-//        [superview addConstraint:myConstraint];
-        
         self.hidden = true
     }
     
     func hide() {
             self.hidden = true
+            stopPulseAnimation()
     }
     
     func show(buttonTitle:NSString,target:AnyObject,actionSelector:NSString) {
+            self.userInteractionEnabled = true
             self.setTitle(buttonTitle, forState: UIControlState.Normal)
             self.addTarget(target, action:Selector(actionSelector), forControlEvents: UIControlEvents.TouchUpInside)
             self.hidden = false
@@ -112,10 +92,12 @@ class PermissionButton: UIButton {
     
     func pulseAnimation() {
         HelperAnimation.pulse(self)
+        self.userInteractionEnabled = false
     }
 
     func stopPulseAnimation() {
         self.layer.removeAllAnimations()
+        self.userInteractionEnabled = true
     }
 
     

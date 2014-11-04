@@ -24,16 +24,12 @@ class Permission: NSObject {
     var type:PermissionType = PermissionType.None
     var buttonText:NSString = ""
     var buttonTextSettings:NSString = ""
-    var buttonTargetSelector:NSString = ""
-    var buttonTargetSelectorSettings:NSString = ""
     
-    convenience init(type:PermissionType,buttonText:NSString,buttonTextSettings:NSString,buttonTargetSelector:NSString,buttonTargetSelectorSettings:NSString) {
+    convenience init(type:PermissionType,buttonText:NSString,buttonTextSettings:NSString) {
         self.init()
         self.type = type
         self.buttonText = buttonText
         self.buttonTextSettings = buttonTextSettings
-        self.buttonTargetSelector = buttonTargetSelector
-        self.buttonTargetSelectorSettings = buttonTargetSelectorSettings
         if type == PermissionType.LocalNotifications {
             showRequestWithoutButton = true
         }

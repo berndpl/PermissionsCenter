@@ -12,17 +12,7 @@ import CoreLocation
 class PermissionLocationServiceAlways: Permission, CLLocationManagerDelegate {
 
     var locationManager:CLLocationManager = CLLocationManager()
-    
-    //CHECK
-    //REQUEST
-    
-//    class var shared : PermissionLocationServiceAlways {
-//        struct Singleton {
-//            static let instance = PermissionLocationServiceAlways()
-//        }
-//        return Singleton.instance
-//    }
-    
+        
     override init() {
         super.init()
         locationManager.delegate = self

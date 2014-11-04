@@ -30,7 +30,7 @@ class PermissionLocationServiceAlways: Permission, CLLocationManagerDelegate {
     
     func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
         println("Location Manager - did change authorizatio state")
-        PermissionsCenter.shared.permissionsButton?.hide()
+        PermissionsCenter.shared.permissionButton?.hide()
         check()
         PermissionsCenter.shared.actOnNextMissingPermission()
     }
@@ -67,7 +67,8 @@ class PermissionLocationServiceAlways: Permission, CLLocationManagerDelegate {
     override func request(){
         println("\t [LocationServiceAlways] Request")
         locationManager.requestAlwaysAuthorization()
-        PermissionsCenter.shared.permissionsButton?.hide()
+        //PermissionsCenter.shared.permissionButton?.hide()
+        PermissionsCenter.shared.permissionButton?.pulseAnimation()
     }
     
     override func requestFallback(){

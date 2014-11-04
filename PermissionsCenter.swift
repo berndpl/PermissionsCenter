@@ -23,12 +23,11 @@ class PermissionsCenter: NSObject, PermissionButtonDelegate {
     
     let logSwitch:Bool = true
     
-    var viewForButton:UIView?
-    
     var permissions:NSMutableArray = NSMutableArray()
     var permissionsMissing:NSMutableArray = NSMutableArray()
     
-    var permissionsButton:PermissionButton?
+    var backgroundView:UIView?
+    var permissionButton:PermissionButton?
     
     class var shared : PermissionsCenter {
         struct Singleton {
@@ -40,9 +39,7 @@ class PermissionsCenter: NSObject, PermissionButtonDelegate {
     override init() {
         super.init()
         Logger.log(logSwitch, logMessage: "[PermissionsCenter] Init")
-        //BUTTON
-        permissionsButton = PermissionButton.buttonWithType(UIButtonType.System) as? PermissionButton
-
+        permissionButton = PermissionButton.buttonWithType(UIButtonType.System) as? PermissionButton
         //PERMISSIONS
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "willEnterForeground", name: UIApplicationWillEnterForegroundNotification, object: nil)
     }
@@ -52,8 +49,10 @@ class PermissionsCenter: NSObject, PermissionButtonDelegate {
         permissionsMissing.addObjectsFromArray(permissions)
     }
     
-    func setup(viewForButton:UIView) {
-        self.viewForButton = viewForButton
+    func setup(backgroundView:UIView) {
+        self.backgroundView = backgroundView
+        //permissionButton = PermissionButton(backgroundView: self.backgroundView!, delegate:self)
+        //backgroundView.add
     }
     
     func addPermission(permissionType:PermissionType) {
@@ -85,31 +84,6 @@ class PermissionsCenter: NSObject, PermissionButtonDelegate {
         
         //check(permissionType)
     }
-    
-//    func requestLocalNotification() {
-//        simpleDescription()
-//        PermissionsCenter.shared.permissionOfType(PermissionType.LocalNotifications)?.requested = true
-//                simpleDescription()
-//        PermissionLocalNotification.shared.request()
-//        //permissionsButton?.hide()
-//        //check()
-//    }
-//    
-//    func requestFallbackLocalNotification() {
-//        UIApplication.sharedApplication().openURL(NSURL(fileURLWithPath: UIApplicationOpenSettingsURLString)!)
-//        PermissionLocalNotification.shared.requestFallback()
-//        //permissionsButton?.hide()
-//        //check()
-//    }
-//    
-//    func requestLocationServiceAlways(){
-//        check(PermissionType.LocationServiceAlways)
-//        PermissionLocationServiceAlways.shared.request()
-//    }
-//    
-//    func requestFallbackLocationServiceAlways(){
-//        PermissionLocationServiceAlways.requestFallback()
-//    }
     
     func checkAllPermissions () {
         Logger.log(logSwitch, logMessage: "[Permissions] Check All")
@@ -160,14 +134,15 @@ class PermissionsCenter: NSObject, PermissionButtonDelegate {
     }
     
     func actOnPermissionStatus(permission:Permission)->Bool {
-        
+
         if permissionsMissing.count == 0 {
             return true
         }
         
         check(permission.type)
         
-        permissionsButton?.setup(viewForButton!, permission: permission, delegate: self)
+        permissionButton?.setup(backgroundView!, permission: permission, delegate: self)
+        permissionButton?.stopPulseAnimation()
         
         Logger.log(logSwitch, logMessage: "[Permissions] Check For: \(permission.simpleDescription())")
         
@@ -175,32 +150,33 @@ class PermissionsCenter: NSObject, PermissionButtonDelegate {
 
         
         if permission.granted == nil {
-            //self.viewForButton?.backgroundColor = UIColor.orangeColor()
-            if viewForButton != nil {
-                permissionsButton?.show(permission.buttonText, target: permission, actionSelector: permission.buttonTargetSelector)
+            self.backgroundView?.backgroundColor = UIColor.orangeColor()
+            if backgroundView != nil {
+                permissionButton?.show(permission.buttonText, target: permission, actionSelector: permission.buttonTargetSelector)
             }
         } else {
             if permission.granted == false { // REQUESTED + NOT GRANTED -> Request
                 
                     if permission.requested == false {
-                    //self.viewForButton?.backgroundColor = UIColor.orangeColor()
-                    if viewForButton != nil {
+                    self.backgroundView?.backgroundColor = UIColor.orangeColor()
+                    if backgroundView != nil {
                         Logger.log(logSwitch, logMessage: "REQUEST")
-                        permissionsButton?.show(permission.buttonText, target:permission, actionSelector: permission.buttonTargetSelector)
+                        permissionButton?.show(permission.buttonText, target:permission, actionSelector: permission.buttonTargetSelector)
                     }
                 }
                 if permission.requested == true {
-                    //self.viewForButton = UIColor.purpleColor()
-                    if viewForButton != nil {
+                    self.backgroundView?.backgroundColor = UIColor.purpleColor()
+                    if backgroundView != nil {
                         Logger.log(logSwitch, logMessage: "SETTINGS")
-                        permissionsButton?.show(permission.buttonTextSettings, target:permission, actionSelector: permission.buttonTargetSelectorSettings)
+                        permissionButton?.show(permission.buttonTextSettings, target:permission, actionSelector: permission.buttonTargetSelectorSettings)
                     }
                 }
             } else {
-                permissionsButton?.hide()
+
+                permissionButton?.hide()
             }
         }
-        
+        //self.backgroundView?.backgroundColor = UIColor.purpleColor()
         return false
     }
     
@@ -237,6 +213,7 @@ class PermissionsCenter: NSObject, PermissionButtonDelegate {
     
     func updateState(type:PermissionType,notificationSettings: UIUserNotificationSettings){
         println ("Update localNotificationSettings: \(notificationSettings)")
+        permissionButton?.stopPulseAnimation()
         // mark: to do check types more specifically than nil
         if notificationSettings.types == nil {
             println ("NIL")
@@ -251,16 +228,16 @@ class PermissionsCenter: NSObject, PermissionButtonDelegate {
             
             //PermissionsCenter.shared.permissionOfType(PermissionType.LocalNotifications)?.check()
             //actOnNextMissingPermission()
+        } else {
+            permissionButton?.hide()
         }
     }
     
     func willEnterForeground() {
         Logger.log(logSwitch, logMessage: "======= FOREGROUND Permissions \(permissions.count) Missing \(permissionsMissing.count)=======")
-        permissionsButton?.hide()
+        permissionButton?.hide()
         PermissionsCenter.shared.checkAllPermissions()
         PermissionsCenter.shared.actOnNextMissingPermission()
-        //resetState()
-        //checkNextMissingPermission()
     }
 
     

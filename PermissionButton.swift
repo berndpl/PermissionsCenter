@@ -18,11 +18,15 @@ class PermissionButton: UIButton {
     let styleFont:UIFont = UIFont(name: "AvenirNext-Heavy", size: 18.0)!
     let styleBackgroundColor:UIColor = UIColor.blackColor()
     
+    
+    
+    //var buttonActivity : UIActivityIndicatorView = UIActivityIndicatorView(frame: CGRectMake(0,0, 50, 50)) as UIActivityIndicatorView
+    
     var delegate:PermissionButtonDelegate?
     
     var permission:Permission?
     
-    func setup(interfaceView:UIView,permission:Permission, delegate:PermissionButtonDelegate) {
+    func setup(backgroundView:UIView,permission:Permission, delegate:PermissionButtonDelegate) {
         
         self.delegate = delegate
         self.permission = permission
@@ -40,29 +44,58 @@ class PermissionButton: UIButton {
         setTitleColor(UIColor.lightGrayColor(), forState: UIControlState.Normal)
         contentEdgeInsets = UIEdgeInsetsMake(0, 15, 0, 15)
         
-        //CENTER BUTTON
         
-        interfaceView.addSubview(self)
-        interfaceView.bringSubviewToFront(self)
+        //CENTER BUTTON
+        backgroundView.addSubview(self)
+        backgroundView.bringSubviewToFront(self)
         var viewsDictionary:NSDictionary  = ["permissionsButton":self]
         
-        interfaceView.addConstraint(NSLayoutConstraint(item: self,
+        backgroundView.addConstraint(NSLayoutConstraint(item: self,
             attribute: NSLayoutAttribute.CenterX,
             relatedBy: NSLayoutRelation.Equal,
-            toItem: interfaceView,
+            toItem: backgroundView,
             attribute: NSLayoutAttribute.CenterX,
             multiplier: 1,
             constant: 0))
         
-        interfaceView.addConstraint(NSLayoutConstraint(item: self,
+        backgroundView.addConstraint(NSLayoutConstraint(item: self,
             attribute: NSLayoutAttribute.CenterY,
             relatedBy: NSLayoutRelation.Equal,
-            toItem: interfaceView,
+            toItem: backgroundView,
             attribute: NSLayoutAttribute.CenterY,
             multiplier: 1,
             constant: 0))
         
-        interfaceView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[permissionsButton(50)]", options: nil, metrics: nil, views: viewsDictionary))
+        backgroundView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[permissionsButton(50)]", options: nil, metrics: nil, views: viewsDictionary))
+        
+//        var buttonActivity:UIActivityIndicatorView = UIActivityIndicatorView()
+//        buttonActivity.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
+//        backgroundView.addSubview(buttonActivity)
+//        buttonActivity.startAnimating()
+
+     //   var activityButtonConstraint:NSLayoutConstraint = NSLayoutConstraint(
+        
+//        NSLayoutConstraint *myConstraint =[NSLayoutConstraint
+//            constraintWithItem:mylabel
+//            attribute:NSLayoutAttributeCenterY
+//            relatedBy:NSLayoutRelationEqual
+//            toItem:superview
+//            attribute:NSLayoutAttributeCenterY
+//            multiplier:1.0
+//            constant:0];
+//        
+//        [superview addConstraint:myConstraint];
+//        
+//        myConstraint =[NSLayoutConstraint
+//            constraintWithItem:mylabel
+//            attribute:NSLayoutAttributeCenterX
+//            relatedBy:NSLayoutRelationEqual
+//            toItem:superview
+//            attribute:NSLayoutAttributeCenterX
+//            multiplier:1.0
+//            constant:0];
+//        
+//        [superview addConstraint:myConstraint];
         
         self.hidden = true
     }
@@ -76,5 +109,14 @@ class PermissionButton: UIButton {
             self.addTarget(target, action:Selector(actionSelector), forControlEvents: UIControlEvents.TouchUpInside)
             self.hidden = false
     }
+    
+    func pulseAnimation() {
+        HelperAnimation.pulse(self)
+    }
+
+    func stopPulseAnimation() {
+        self.layer.removeAllAnimations()
+    }
+
     
 }

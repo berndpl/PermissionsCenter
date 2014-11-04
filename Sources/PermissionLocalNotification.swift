@@ -46,7 +46,7 @@ class PermissionLocalNotification: Permission {
         var types:UIUserNotificationType = UIUserNotificationType.Badge | UIUserNotificationType.Sound | UIUserNotificationType.Alert
         var settings:UIUserNotificationSettings = UIUserNotificationSettings(forTypes: types, categories: nil)
         UIApplication.sharedApplication().registerUserNotificationSettings(settings)
-        //PermissionsCenter.shared.permissionsButton?.hide()
+        PermissionsCenter.shared.permissionButton?.pulseAnimation()
     }
     
     override func requestFallback() {

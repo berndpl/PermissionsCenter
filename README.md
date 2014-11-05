@@ -1,23 +1,35 @@
 PermissionsCenter
 =================
 
-A unified approach on implementing permission requests on iOS8
+An approach to present sequential permission requests on iOS8.
 
-## Supported
+## Supported Permission Types
 
-* **LocalNotifications** - support limited due to missing callback/delegate methods
-* **LocationServicesAlways** - requires NSLocationAlwaysUsageDescription entry in plist
+* **LocalNotifications** - Required: Helper function in AppDelegate required for callback
+* **LocationServicesAlways** - Required:  NSLocationAlwaysUsageDescription entry in plist
+* **Calendar**
+* **Reminders**
 
 ## Usage
 
-1. Setup PermissionsCenter with background view for Request Button
-2. Add Permissions to monitor
-3. Check Permissions
+1. Add Helper functions if required – see **Supported Permission Types**
 
-## Example
+2. Setup PermissionsCenter with background view for Request Button
 
         PermissionsCenter.shared.setup(headerView)
-        PermissionsCenter.shared.addPermission(PermissionType.LocalNotifications) //Local Notifaciton last/first to show, because no callback
+
+3. Add Permissions to monitor
+
+        PermissionsCenter.shared.addPermission(PermissionType.LocalNotifications)
         PermissionsCenter.shared.addPermission(PermissionType.LocationServiceAlways)
-        PermissionsCenter.shared.checkAllPermissions()
-        PermissionsCenter.shared.actOnNextMissingPermission()
+        PermissionsCenter.shared.addPermission(PermissionType.Calendar)
+	    PermissionsCenter.shared.addPermission(PermissionType.Reminders)
+                
+
+4. Check Permissions
+
+	    PermissionsCenter.shared.check()
+                
+## Interface
+
+A button centered on the background view. When there is an ongoing permission request it pulses.

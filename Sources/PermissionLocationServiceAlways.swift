@@ -11,6 +11,8 @@ import CoreLocation
 
 class PermissionLocationServiceAlways: Permission, CLLocationManagerDelegate {
 
+    let logSwitch:Bool = true
+    
     var locationManager:CLLocationManager = CLLocationManager()
         
     override init() {
@@ -19,10 +21,10 @@ class PermissionLocationServiceAlways: Permission, CLLocationManagerDelegate {
     }
     
     func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
-        println("Location Manager - did change authorizatio state")
-        PermissionsCenter.shared.permissionButton?.hide()
-        check()
-        PermissionsCenter.shared.actOnNextMissingPermission()
+        Logger.log(logSwitch, logMessage: "[LocationServiceAlways] Did change authorization state")
+        var currentStatus:CLAuthorizationStatus = status
+        var requiredStatus:CLAuthorizationStatus = CLAuthorizationStatus.Authorized
+        PermissionsCenter.shared.check()
     }
     
     override func check()->Bool {
@@ -35,15 +37,17 @@ class PermissionLocationServiceAlways: Permission, CLLocationManagerDelegate {
         if currentStatus != requiredStatus {
             switch currentStatus {
             case CLAuthorizationStatus.NotDetermined:
-                println("\t [LocationServiceAlways] Check - NotDetermined")
+                Logger.log(logSwitch, logMessage: "\t [LocationServiceAlways] Check - NotDetermined")
+                permission?.requested = false
+                //permission?.granted = nil
                 return false
             case CLAuthorizationStatus.Denied:
-                println("\t [LocationServiceAlways] Check - Denied")
+                Logger.log(logSwitch, logMessage: "\t [LocationServiceAlways] Check - Denied")
                 permission?.requested = true
                 permission?.granted = false
                 return false
             default:
-                println("\t [LocationServiceAlways]  - Missing Info - Default")
+                Logger.log(logSwitch, logMessage: "\t [LocationServiceAlways]  - Missing Info - Default")
                 return false
             }
         } else {
@@ -55,14 +59,15 @@ class PermissionLocationServiceAlways: Permission, CLLocationManagerDelegate {
     }
     
     override func request(){
-        println("\t [LocationServiceAlways] Request")
-        locationManager.requestAlwaysAuthorization()
-        //PermissionsCenter.shared.permissionButton?.hide()
         PermissionsCenter.shared.permissionButton?.pulseAnimation()
+        var permission:Permission? = PermissionsCenter.shared.permissionOfType(PermissionType.LocationServiceAlways)
+        permission?.requested = true
+        Logger.log(logSwitch, logMessage: "\t [LocationServiceAlways] Request")
+        locationManager.requestAlwaysAuthorization()
     }
     
     override func requestFallback(){
-        println("\t [LocationServiceAlways] Request Fallback")
+        Logger.log(logSwitch, logMessage: "\t [LocationServiceAlways] Request Fallback")
         UIApplication.sharedApplication().openURL(NSURL(string: UIApplicationOpenSettingsURLString)!)
     }
     

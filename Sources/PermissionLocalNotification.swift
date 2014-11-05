@@ -9,7 +9,9 @@
 import UIKit
 
 class PermissionLocalNotification: Permission {
-        
+    
+    let logSwitch:Bool = true
+    
     override init() {
         super.init()
     }
@@ -22,23 +24,27 @@ class PermissionLocalNotification: Permission {
         if currentStatus.types == requiredStatus {
             PermissionsCenter.shared.permissionOfType(PermissionType.LocalNotifications)?.granted = true
             PermissionsCenter.shared.permissionsMissing.removeObject(permission!) //REMOVE GRANTED
+            Logger.log(logSwitch, logMessage: "[LocalNotifications] Granted")
             return true
         } else {
             PermissionsCenter.shared.permissionOfType(PermissionType.LocalNotifications)?.granted = false
+            Logger.log(logSwitch, logMessage: "[LocalNotifications] Denied")
             return false
         }
     }
     
     override func request(){
-        println("\t [LocalNotification] Request")
+        PermissionsCenter.shared.permissionButton?.pulseAnimation()
+        var permission:Permission? = PermissionsCenter.shared.permissionOfType(PermissionType.LocalNotifications)
+        permission?.requested = true
         var types:UIUserNotificationType = UIUserNotificationType.Badge | UIUserNotificationType.Sound | UIUserNotificationType.Alert
         var settings:UIUserNotificationSettings = UIUserNotificationSettings(forTypes: types, categories: nil)
         UIApplication.sharedApplication().registerUserNotificationSettings(settings)
-        PermissionsCenter.shared.permissionButton?.pulseAnimation()
+        Logger.log(logSwitch, logMessage: "[LocalNotifications] Request")
     }
     
     override func requestFallback() {
-        println("\t [LocalNotification] Request Fallback")
+        Logger.log(logSwitch, logMessage: "[LocalNotification] Request Fallback")
         UIApplication.sharedApplication().openURL(NSURL(string: UIApplicationOpenSettingsURLString)!)
     }
     

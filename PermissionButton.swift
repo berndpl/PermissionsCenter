@@ -8,9 +8,6 @@
 
 import UIKit
 
-protocol PermissionButtonDelegate {
-}
-
 class PermissionButton: UIButton {
 
     let styleBorder:Bool = false
@@ -20,23 +17,14 @@ class PermissionButton: UIButton {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        // Initialization code
-        
     }
     
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    //var buttonActivity : UIActivityIndicatorView = UIActivityIndicatorView(frame: CGRectMake(0,0, 50, 50)) as UIActivityIndicatorView
     
-    var delegate:PermissionButtonDelegate?
-    
-    var permission:Permission?
-    
-    func setup(backgroundView:UIView,permission:Permission, delegate:PermissionButtonDelegate) {
-        
-        self.delegate = delegate
-        self.permission = permission
+    func setup(backgroundView:UIView) {
+
         setTranslatesAutoresizingMaskIntoConstraints(false)
         
         //STYLE BUTTON
@@ -50,7 +38,6 @@ class PermissionButton: UIButton {
         titleLabel?.font = styleFont
         setTitleColor(UIColor.lightGrayColor(), forState: UIControlState.Normal)
         contentEdgeInsets = UIEdgeInsetsMake(0, 15, 0, 15)
-        
         
         //CENTER BUTTON
         backgroundView.addSubview(self)
@@ -79,23 +66,27 @@ class PermissionButton: UIButton {
     }
     
     func hide() {
-            self.hidden = true
-            stopPulseAnimation()
+        self.stopPulseAnimation()
+        self.hidden = true
     }
     
     func show(buttonTitle:NSString,target:AnyObject,actionSelector:NSString) {
-            self.userInteractionEnabled = true
-            self.setTitle(buttonTitle, forState: UIControlState.Normal)
-            self.addTarget(target, action:Selector(actionSelector), forControlEvents: UIControlEvents.TouchUpInside)
-            self.hidden = false
+        self.removeTarget(nil, action: nil, forControlEvents: UIControlEvents.AllEvents)
+        self.userInteractionEnabled = true
+        self.setTitle(buttonTitle, forState: UIControlState.Normal)
+        self.addTarget(target, action:Selector(actionSelector), forControlEvents: UIControlEvents.TouchUpInside)
+        self.hidden = false
     }
     
     func pulseAnimation() {
+        println("--PULSE")
+        self.layer.removeAllAnimations()
         HelperAnimation.pulse(self)
         self.userInteractionEnabled = false
     }
 
     func stopPulseAnimation() {
+        println("--PULSE stop")
         self.layer.removeAllAnimations()
         self.userInteractionEnabled = true
     }

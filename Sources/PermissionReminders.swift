@@ -9,7 +9,7 @@
 import UIKit
 import EventKit
 
-class PermissionCalendar: Permission {
+class PermissionReminders: Permission {
     
     let logSwitch:Bool = true
     
@@ -21,32 +21,32 @@ class PermissionCalendar: Permission {
     
     override func check()->Bool {
         
-        var currentStatus:EKAuthorizationStatus = EKEventStore.authorizationStatusForEntityType(EKEntityTypeEvent)
+        var currentStatus:EKAuthorizationStatus = EKEventStore.authorizationStatusForEntityType(EKEntityTypeReminder)
         var requiredStatus:EKAuthorizationStatus = EKAuthorizationStatus.Authorized
 
-        var permission:Permission? = PermissionsCenter.shared.permissionOfType(PermissionType.Calendar)
+        var permission:Permission? = PermissionsCenter.shared.permissionOfType(PermissionType.Reminders)
         
         if currentStatus != requiredStatus {
             switch currentStatus {
             case .Authorized:
-                Logger.log(logSwitch, logMessage: "[Calendar] Authorized - Should not happen. Here.")
+                Logger.log(logSwitch, logMessage: "[Reminders] Authorized - Should not happen. Here.")
                 permission?.requested = true
                 permission?.granted = true
                 return true
             case .NotDetermined:
-                Logger.log(logSwitch, logMessage: "[Calendar] NotDetermined")
+                Logger.log(logSwitch, logMessage: "[Reminders] NotDetermined")
                 permission?.requested = false
                 permission?.granted = nil
             case .Restricted:
-                Logger.log(logSwitch, logMessage: "[Calendar] Restricted")
+                Logger.log(logSwitch, logMessage: "[Reminders] Restricted")
                 permission?.requested = true
                 permission?.granted = false
             case .Denied:
-                Logger.log(logSwitch, logMessage: "[Calendar] Denied")
+                Logger.log(logSwitch, logMessage: "[Reminders] Denied")
                 permission?.requested = true
                 permission?.granted = false
             default:
-                Logger.log(logSwitch, logMessage: "[Calendar] Default - Should Not Happen")
+                Logger.log(logSwitch, logMessage: "[Reminders] Default - Should Not Happen")
                 permission?.requested = true
                 permission?.granted = false
             }
@@ -60,13 +60,14 @@ class PermissionCalendar: Permission {
     }
     
     override func request(){
-        println("\t [Calendar] Request")
+        println("\t [Reminders] Request")
         PermissionsCenter.shared.permissionButton?.pulseAnimation()
-        self.eventStore.requestAccessToEntityType(EKEntityTypeEvent) {
+        self.eventStore.requestAccessToEntityType(EKEntityTypeReminder) {
             (granted: Bool, err: NSError!) in
             dispatch_async(dispatch_get_main_queue()) {
-                println("[Calendar] Request Result. Granted? \(granted)")
-                var permission:Permission? = PermissionsCenter.shared.permissionOfType(PermissionType.Calendar)
+                println("[Reminders] Request Result. Granted? \(granted)")
+                println("[Reminders] a Missing \(PermissionsCenter.shared.permissionsMissing.count)")
+                var permission:Permission? = PermissionsCenter.shared.permissionOfType(PermissionType.Reminders)
                 permission?.granted = granted
                 PermissionsCenter.shared.check()
             }
@@ -74,7 +75,7 @@ class PermissionCalendar: Permission {
     }
     
     override func requestFallback(){
-        println("\t [Calendar] Request Fallback")
+        println("\t [Reminders] Request Fallback")
         UIApplication.sharedApplication().openURL(NSURL(string: UIApplicationOpenSettingsURLString)!)
     }
     

@@ -10,7 +10,7 @@ import UIKit
 
 class PermissionLocalNotification: Permission {
     
-    let logSwitch:Bool = true
+    let logSwitch:Bool = false
     
     override init() {
         super.init()

@@ -31,7 +31,7 @@ import UIKit
 
 class PermissionsCenter: NSObject {
     
-    let logSwitch:Bool = true
+    let logSwitch:Bool = false
     
     var permissions:NSMutableArray = NSMutableArray()
     var permissionsMissing:NSMutableArray = NSMutableArray()
@@ -48,7 +48,7 @@ class PermissionsCenter: NSObject {
     
     override init() {
         super.init()
-        Logger.log(logSwitch, logMessage: "[PermissionsCenter] Init")
+        Logger.log(logSwitch, logMessage: "[Permissions] PermissionsCenter Init")
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "willEnterForeground", name: UIApplicationWillEnterForegroundNotification, object: nil)
     }
     
@@ -67,33 +67,36 @@ class PermissionsCenter: NSObject {
         Logger.log(logSwitch, logMessage: "[Permissions] Adding (\(Permission.typeAsString(permissionType)))")
         var permissionToAdd:Permission?
         
-        switch permissionType {
-        case .LocalNotifications:
-            permissionToAdd = PermissionLocalNotification(
-                type: PermissionType.LocalNotifications,
-                buttonText: "Allow Notifications",
-                buttonTextSettings: "Enable Notifications")
-        case .LocationServiceAlways:
-            permissionToAdd = PermissionLocationServiceAlways(
-                type: PermissionType.LocationServiceAlways,
-                buttonText: "Allow Ranging of iBeacons",
-                buttonTextSettings: "Enable Location Services")
-        case .Calendar:
-            permissionToAdd = PermissionCalendar(
-                type: PermissionType.Calendar,
-                buttonText: "Allow Calendar Access",
-                buttonTextSettings: "Enable Calendar Access")
-        case .Reminders:
-            permissionToAdd = PermissionReminders(
-                type: PermissionType.Reminders,
-                buttonText: "Allow Access to Reminders",
-                buttonTextSettings: "Enable Access to Reminders")
-        default: println("Unrecognized Permission Type \(permissionType)")
-        }
-        
-        if permissionToAdd != nil {
-            permissions.addObject(permissionToAdd!)
-            permissionsMissing.addObject(permissionToAdd!)
+        if isTypeInArray(permissionType, permissionsArray: permissions) == false {
+            switch permissionType {
+            case .LocalNotifications:
+                permissionToAdd = PermissionLocalNotification(
+                    type: PermissionType.LocalNotifications,
+                    buttonText: "Allow Notifications",
+                    buttonTextSettings: "Enable Notifications")
+            case .LocationServiceAlways:
+                permissionToAdd = PermissionLocationServiceAlways(
+                    type: PermissionType.LocationServiceAlways,
+                    buttonText: "Allow Ranging of iBeacons",
+                    buttonTextSettings: "Enable Location Services")
+            case .Calendar:
+                permissionToAdd = PermissionCalendar(
+                    type: PermissionType.Calendar,
+                    buttonText: "Allow Calendar Access",
+                    buttonTextSettings: "Enable Calendar Access")
+            case .Reminders:
+                permissionToAdd = PermissionReminders(
+                    type: PermissionType.Reminders,
+                    buttonText: "Allow Access to Reminders",
+                    buttonTextSettings: "Enable Access to Reminders")
+            default: println("Unrecognized Permission Type \(permissionType)")
+            }   
+            if permissionToAdd != nil {
+                permissions.addObject(permissionToAdd!)
+                permissionsMissing.addObject(permissionToAdd!)
+            }
+        } else {
+            println("[Permissions] Already added")
         }
     }
     
@@ -118,6 +121,16 @@ class PermissionsCenter: NSObject {
         }
         simpleDescription()
     }
+
+    func isTypeInArray(permissionType:PermissionType,permissionsArray:NSMutableArray)->Bool {
+        for item:AnyObject in permissionsArray {
+            let permissionItem = item as Permission
+            if permissionItem.type == permissionType {
+                return true
+            }
+        }
+        return false
+    }
     
     func isInArray(permission:Permission,permissionsArray:NSMutableArray)->Bool {
         for item:AnyObject in permissionsArray {
@@ -136,12 +149,12 @@ class PermissionsCenter: NSObject {
                 return permission.check()
             }
         }
-        Logger.log(logSwitch, logMessage: "Unrecognized Permission Type to check: \(permissionType)")
+        Logger.log(logSwitch, logMessage: "[Permissions] Unrecognized PermissionType to check: \(permissionType)")
         return false
     }
     
     func actOnNextMissingPermission() {
-        println("[Permissions] Check (\(permissionsMissing.count))")
+        Logger.log(logSwitch, logMessage: "[Permissions] Check (\(permissionsMissing.count))")
         if permissionsMissing.count > 0 {
             let permission = permissionsMissing.lastObject as Permission
             actOnPermissionStatus(permission)
@@ -152,30 +165,32 @@ class PermissionsCenter: NSObject {
     
     func actOnPermissionStatus(permission:Permission) {
         
-        Logger.log(logSwitch, logMessage: "[Permissions] Check For: \(permission.simpleDescription())")
-        Logger.log(logSwitch, logMessage: "request \(permissionOfType(permission.type)?.simpleDescription())")
+        Logger.log(logSwitch, logMessage: "[Permissions] Check for \(permission.simpleDescription())")
+        Logger.log(logSwitch, logMessage: "[Permissions] Request \(permissionOfType(permission.type)?.simpleDescription())")
         
-        if permission.granted == nil {
-            if permission.requested == false {
-                permissionButton?.show(permission.buttonText, target: permission, actionSelector: "request")
-            } else {
-                permissionButton?.show(permission.buttonText, target: permission, actionSelector: "requestFallback")
-            }
-        } else {
-            if permission.granted == false { // REQUESTED + NOT GRANTED -> Request
+
+            if permission.granted == nil {
                 if permission.requested == false {
-                    Logger.log(logSwitch, logMessage: "REQUEST")
-                    permissionButton?.show(permission.buttonText, target:permission, actionSelector: "request")
-                }
-                if permission.requested == true {
-                    Logger.log(logSwitch, logMessage: "SETTINGS")
-                    permissionButton?.show(permission.buttonTextSettings, target:permission, actionSelector: "requestFallback")
+                    permissionButton?.show(permission.buttonText, target: permission, actionSelector: "request")
+                } else {
+                    permissionButton?.show(permission.buttonText, target: permission, actionSelector: "requestFallback")
                 }
             } else {
-                permissionButton?.hide()
+                if permission.granted == false { // REQUESTED + NOT GRANTED -> Request
+                    if permission.requested == false {
+                        Logger.log(logSwitch, logMessage: "[Permissions] Request")
+                        permissionButton?.show(permission.buttonText, target:permission, actionSelector: "request")
+                    }
+                    if permission.requested == true {
+                        Logger.log(logSwitch, logMessage: "[Permissions] Settings")
+                        permissionButton?.show(permission.buttonTextSettings, target:permission, actionSelector: "requestFallback")
+                    }
+                } else {
+                    permissionButton?.hide()
+                }
             }
-        }
-            
+        
+        
     }
     
     //MARK: State
@@ -191,7 +206,7 @@ class PermissionsCenter: NSObject {
     }
     
     func simpleDescription() {
-        Logger.log(logSwitch, logMessage: "======= [Permissions] Check - Permissions \(permissions.count) Missing \(permissionsMissing.count)=======")
+        Logger.log(logSwitch, logMessage: "[Permissions] ======= Check - Permissions \(permissions.count) Missing \(permissionsMissing.count) =======")
         for item:AnyObject in permissionsMissing {
             let permission = item as Permission
             Logger.log(logSwitch, logMessage: "\t [Missing] \(permission.simpleDescription())")
@@ -210,7 +225,7 @@ class PermissionsCenter: NSObject {
     }
     
     func updateState(type:PermissionType,notificationSettings: UIUserNotificationSettings){
-        Logger.log(logSwitch, logMessage: "Update localNotificationSettings: \(notificationSettings)")
+        Logger.log(logSwitch, logMessage: "[Permissions] Updated Local Notifications Settings: \(notificationSettings)")
         
         if permissionsMissing.count > 0 {
             if (permissionsMissing.lastObject as Permission).type == PermissionType.LocalNotifications {
@@ -220,7 +235,8 @@ class PermissionsCenter: NSObject {
     }
     
     func willEnterForeground() {
-        Logger.log(logSwitch, logMessage: "======= FOREGROUND Permissions \(permissions.count) Missing \(permissionsMissing.count)=======")
+        Logger.log(logSwitch, logMessage: "[Permissions] ======= FOREGROUND Permissions \(permissions.count) Missing \(permissionsMissing.count) =======")
+        
         check()
     }
 

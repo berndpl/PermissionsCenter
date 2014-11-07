@@ -10,10 +10,10 @@ import UIKit
 
 class PermissionButton: UIButton {
 
-    let styleBorder:Bool = false
+    let styleBorder:Bool = true
     let styleBorderWidth:CGFloat = 4.0
-    let styleFont:UIFont = UIFont(name: "AvenirNext-Heavy", size: 18.0)!
     let styleBackgroundColor:UIColor = UIColor.blackColor()
+    var activeRequest:Bool = false
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -35,7 +35,7 @@ class PermissionButton: UIButton {
             layer.borderColor = UIColor.lightGrayColor().CGColor
             backgroundColor = styleBackgroundColor
         }
-        titleLabel?.font = styleFont
+        titleLabel?.font = UIFont(name: "AvenirNext-Heavy", size: 18.0)
         setTitleColor(UIColor.lightGrayColor(), forState: UIControlState.Normal)
         contentEdgeInsets = UIEdgeInsetsMake(0, 15, 0, 15)
         
@@ -57,7 +57,7 @@ class PermissionButton: UIButton {
             relatedBy: NSLayoutRelation.Equal,
             toItem: backgroundView,
             attribute: NSLayoutAttribute.CenterY,
-            multiplier: 1,
+            multiplier: 0.5,
             constant: 0))
         
         backgroundView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[permissionsButton(50)]", options: nil, metrics: nil, views: viewsDictionary))
@@ -79,15 +79,15 @@ class PermissionButton: UIButton {
     }
     
     func pulseAnimation() {
-        println("--PULSE")
-        self.layer.removeAllAnimations()
-        HelperAnimation.pulse(self)
+        activeRequest = true        
+        HelperAnimation.stopPulse(self)
+        HelperAnimation.startPulse(self)
         self.userInteractionEnabled = false
     }
 
     func stopPulseAnimation() {
-        println("--PULSE stop")
-        self.layer.removeAllAnimations()
+        activeRequest = false
+        HelperAnimation.stopPulse(self)
         self.userInteractionEnabled = true
     }
 

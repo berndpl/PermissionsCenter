@@ -11,7 +11,7 @@ import CoreLocation
 
 class PermissionLocationServiceAlways: Permission, CLLocationManagerDelegate {
 
-    let logSwitch:Bool = true
+    let logSwitch:Bool = false
     
     var locationManager:CLLocationManager = CLLocationManager()
         

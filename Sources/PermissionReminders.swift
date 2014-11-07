@@ -11,7 +11,7 @@ import EventKit
 
 class PermissionReminders: Permission {
     
-    let logSwitch:Bool = true
+    let logSwitch:Bool = false
     
     var eventStore:EKEventStore = EKEventStore()
     

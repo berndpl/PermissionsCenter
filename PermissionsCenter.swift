@@ -96,7 +96,7 @@ class PermissionsCenter: NSObject {
                 permissionsMissing.addObject(permissionToAdd!)
             }
         } else {
-            println("[Permissions] Already added")
+            Logger.log(logSwitch, logMessage: "[Permissions] Already added")
         }
     }
     

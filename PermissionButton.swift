@@ -10,7 +10,7 @@ import UIKit
 
 class PermissionButton: UIButton {
 
-    let styleBorder:Bool = true
+    let styleBorder:Bool = false
     let styleBorderWidth:CGFloat = 4.0
     let styleBackgroundColor:UIColor = UIColor.blackColor()
     var activeRequest:Bool = false

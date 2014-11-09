@@ -60,12 +60,12 @@ class PermissionCalendar: Permission {
     }
     
     override func request(){
-        println("\t [Calendar] Request")
+        Logger.log(logSwitch, logMessage: "\t [Calendar] Request")
         PermissionsCenter.shared.permissionButton?.pulseAnimation()
         self.eventStore.requestAccessToEntityType(EKEntityTypeEvent) {
             (granted: Bool, err: NSError!) in
             dispatch_async(dispatch_get_main_queue()) {
-                println("[Calendar] Request Result. Granted? \(granted)")
+                Logger.log(self.logSwitch, logMessage: "[Calendar] Request Result. Granted? \(granted)")
                 var permission:Permission? = PermissionsCenter.shared.permissionOfType(PermissionType.Calendar)
                 permission?.granted = granted
                 PermissionsCenter.shared.check()
@@ -74,7 +74,7 @@ class PermissionCalendar: Permission {
     }
     
     override func requestFallback(){
-        println("\t [Calendar] Request Fallback")
+        Logger.log(logSwitch, logMessage: "\t [Calendar] Request Fallback")
         UIApplication.sharedApplication().openURL(NSURL(string: UIApplicationOpenSettingsURLString)!)
     }
     

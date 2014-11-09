@@ -60,13 +60,13 @@ class PermissionReminders: Permission {
     }
     
     override func request(){
-        println("\t [Reminders] Request")
+        Logger.log(logSwitch, logMessage: "\t [Reminders] Request")
         PermissionsCenter.shared.permissionButton?.pulseAnimation()
         self.eventStore.requestAccessToEntityType(EKEntityTypeReminder) {
             (granted: Bool, err: NSError!) in
             dispatch_async(dispatch_get_main_queue()) {
-                println("[Reminders] Request Result. Granted? \(granted)")
-                println("[Reminders] a Missing \(PermissionsCenter.shared.permissionsMissing.count)")
+                Logger.log(self.logSwitch, logMessage: "[Reminders] Request Result. Granted? \(granted)")
+                Logger.log(self.logSwitch, logMessage: "[Reminders] a Missing \(PermissionsCenter.shared.permissionsMissing.count)")
                 var permission:Permission? = PermissionsCenter.shared.permissionOfType(PermissionType.Reminders)
                 permission?.granted = granted
                 PermissionsCenter.shared.check()
@@ -75,7 +75,7 @@ class PermissionReminders: Permission {
     }
     
     override func requestFallback(){
-        println("\t [Reminders] Request Fallback")
+        Logger.log(logSwitch, logMessage: "\t [Reminders] Request Fallback")
         UIApplication.sharedApplication().openURL(NSURL(string: UIApplicationOpenSettingsURLString)!)
     }
     

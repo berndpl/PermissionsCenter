@@ -10,10 +10,24 @@ import UIKit
 
 class PermissionLocalNotification: Permission {
     
-    let logSwitch:Bool = false
+    let logSwitch:Bool = true
     
     override init() {
         super.init()
+        checkForRequiredImplementation()
+    }
+    
+    func checkForRequiredImplementation()->Bool {
+        var implemented:Bool? = UIApplication.sharedApplication().delegate?.respondsToSelector("application:didRegisterUserNotificationSettings:")
+        if implemented == true {
+            Logger.log(logSwitch, logMessage: "[LocalNotifications] Ok. Delegate in App Delegate implemented")
+            return true
+        } else {
+            let missingImplementation = "func application(application: UIApplication, didRegisterUserNotificationSettings notificationSettings: UIUserNotificationSettings)"
+            let missingImplementationDetail = "PermissionsCenter.shared.updateState(PermissionType.LocalNotifications,notificationSettings: notificationSettings)"
+            fatalError("Missing Implementation in App Delegate: call (\(missingImplementationDetail)) in (\(missingImplementation))")
+            return false
+        }
     }
     
     override func check()->Bool{

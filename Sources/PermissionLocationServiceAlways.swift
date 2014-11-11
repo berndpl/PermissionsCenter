@@ -18,6 +18,18 @@ class PermissionLocationServiceAlways: Permission, CLLocationManagerDelegate {
     override init() {
         super.init()
         locationManager.delegate = self
+        checkForPlistEntry("NSLocationAlwaysUsageDescription")
+    }
+    
+    func checkForPlistEntry(entryString:NSString)->Bool{
+        var entry:NSString? = NSBundle.mainBundle().objectForInfoDictionaryKey(entryString) as? NSString
+        if entry != nil {
+            println("[LocationServiceAlways] Ok. Plist Entry exists \(entryString)")
+            return true
+        } else {
+            fatalError("[LocationServiceAlways] Required Plist Entry Missing (\(entryString))")
+            return false
+        }
     }
     
     func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {

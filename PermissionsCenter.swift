@@ -22,9 +22,7 @@ func application(application: UIApplication, didRegisterUserNotificationSettings
 PermissionsCenter.shared.setup(view)
 PermissionsCenter.shared.addPermission(PermissionType.LocalNotifications)
 PermissionsCenter.shared.addPermission(PermissionType.LocationServiceAlways)
-PermissionsCenter.shared.checkAllPermissions()
-PermissionsCenter.shared.actOnNextMissingPermission()
-println("<Permissions> All Granted? \(PermissionsCenter.shared.allGranted())")
+PermissionsCenter.shared.check()
 */
 
 import UIKit

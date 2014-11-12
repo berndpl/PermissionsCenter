@@ -16,8 +16,8 @@ class HelperAnimation: NSObject {
     class func startPulse (view:UIView) {
         //println("[Animation] Pulse")
         var changeAlpha:CABasicAnimation = CABasicAnimation(keyPath:"opacity") as CABasicAnimation
-        changeAlpha.fromValue = 0.1
-        changeAlpha.toValue = 0.4
+        changeAlpha.fromValue = 0.3
+        changeAlpha.toValue = 0.8
         changeAlpha.duration = 0.8
         changeAlpha.repeatCount = 999
         changeAlpha.autoreverses = true

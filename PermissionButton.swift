@@ -10,9 +10,9 @@ import UIKit
 
 class PermissionButton: UIButton {
 
-    let styleBorder:Bool = false
+    let styleBorder:Bool = true
     let styleBorderWidth:CGFloat = 4.0
-    let styleBackgroundColor:UIColor = UIColor.blackColor()
+    let styleBackgroundColor:UIColor = UIColor.clearColor()
     var activeRequest:Bool = false
 
     override init(frame: CGRect) {
@@ -32,11 +32,11 @@ class PermissionButton: UIButton {
         if styleBorder == true {
             layer.borderWidth = styleBorderWidth
             layer.cornerRadius = 15.0
-            layer.borderColor = UIColor.lightGrayColor().CGColor
+            layer.borderColor = UIColor.whiteColor().CGColor
             backgroundColor = styleBackgroundColor
         }
-        titleLabel?.font = UIFont(name: "AvenirNext-Heavy", size: 18.0)
-        setTitleColor(UIColor.lightGrayColor(), forState: UIControlState.Normal)
+        titleLabel?.font = PermissionsCenterDefaults.titleFont()
+        setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
         contentEdgeInsets = UIEdgeInsetsMake(0, 15, 0, 15)
         
         //CENTER BUTTON
@@ -57,12 +57,17 @@ class PermissionButton: UIButton {
             relatedBy: NSLayoutRelation.Equal,
             toItem: backgroundView,
             attribute: NSLayoutAttribute.CenterY,
-            multiplier: 0.5,
+            multiplier: 1,
             constant: 0))
         
         backgroundView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[permissionsButton(50)]", options: nil, metrics: nil, views: viewsDictionary))
         
         self.hidden = true
+    }
+    
+    override func layoutSubviews(){
+        super.layoutSubviews()
+        self.updateConstraints()
     }
     
     func hide() {

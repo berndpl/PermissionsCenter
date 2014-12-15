@@ -42,6 +42,7 @@ class PermissionLocationServiceAlways: Permission, CLLocationManagerDelegate {
     override func check()->Bool {
         
         var currentStatus:CLAuthorizationStatus = CLLocationManager.authorizationStatus()
+        //var currentStatus:CLAuthorizationStatus = CLAuthorizationStatus.NotDetermined
         var requiredStatus:CLAuthorizationStatus = CLAuthorizationStatus.Authorized
 
         var permission:Permission? = PermissionsCenter.shared.permissionOfType(PermissionType.LocationServiceAlways)

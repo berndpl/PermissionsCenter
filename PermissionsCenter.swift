@@ -154,9 +154,14 @@ class PermissionsCenter: NSObject {
     func actOnNextMissingPermission() {
         Logger.log(logSwitch, logMessage: "[Permissions] Check (\(permissionsMissing.count))")
         if permissionsMissing.count > 0 {
+            println("Message PAUSE")
+            MessageCenter.shared.reset()
+            MessageCenter.shared.pause()
             let permission = permissionsMissing.lastObject as Permission
             actOnPermissionStatus(permission)
         } else {
+            println("Message RESUME")            
+            MessageCenter.shared.resume()
             NSNotificationCenter.defaultCenter().postNotificationName("defaultsDidChange", object: nil)
         }
     }
@@ -234,7 +239,6 @@ class PermissionsCenter: NSObject {
     
     func willEnterForeground() {
         Logger.log(logSwitch, logMessage: "[Permissions] ======= FOREGROUND Permissions \(permissions.count) Missing \(permissionsMissing.count) =======")
-        
         check()
     }
 

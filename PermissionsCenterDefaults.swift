@@ -19,5 +19,13 @@ class PermissionsCenterDefaults: NSObject {
         }
         return lineWidth * availableWidth / 288
     }
+    
+    class func textFont(size:CGFloat)->UIFont {
+        return UIFont(name: "HelveticaNeue-Medium", size: size)!
+    }
+    
+    class func titleFont()->UIFont {
+        return UIFont(name: "HelveticaNeue-Bold", size: 20.0)!
+    }
 
 }

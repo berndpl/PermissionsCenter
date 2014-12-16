@@ -33,7 +33,7 @@ class PermissionLocationServiceAlways: Permission, CLLocationManagerDelegate {
     }
     
     func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
-        Logger.log(logSwitch, logMessage: "[LocationServiceAlways] Did change authorization state")
+        PermissionCenterLogger.log(logSwitch, logMessage: "[LocationServiceAlways] Did change authorization state")
         var currentStatus:CLAuthorizationStatus = status
         var requiredStatus:CLAuthorizationStatus = CLAuthorizationStatus.Authorized
         PermissionsCenter.shared.check()
@@ -50,17 +50,17 @@ class PermissionLocationServiceAlways: Permission, CLLocationManagerDelegate {
         if currentStatus != requiredStatus {
             switch currentStatus {
             case CLAuthorizationStatus.NotDetermined:
-                Logger.log(logSwitch, logMessage: "\t [LocationServiceAlways] Check - NotDetermined")
+                PermissionCenterLogger.log(logSwitch, logMessage: "\t [LocationServiceAlways] Check - NotDetermined")
                 permission?.requested = false
                 //permission?.granted = nil
                 return false
             case CLAuthorizationStatus.Denied:
-                Logger.log(logSwitch, logMessage: "\t [LocationServiceAlways] Check - Denied")
+                PermissionCenterLogger.log(logSwitch, logMessage: "\t [LocationServiceAlways] Check - Denied")
                 permission?.requested = true
                 permission?.granted = false
                 return false
             default:
-                Logger.log(logSwitch, logMessage: "\t [LocationServiceAlways]  - Missing Info - Default")
+                PermissionCenterLogger.log(logSwitch, logMessage: "\t [LocationServiceAlways]  - Missing Info - Default")
                 return false
             }
         } else {
@@ -75,12 +75,12 @@ class PermissionLocationServiceAlways: Permission, CLLocationManagerDelegate {
         PermissionsCenter.shared.permissionButton?.pulseAnimation()
         var permission:Permission? = PermissionsCenter.shared.permissionOfType(PermissionType.LocationServiceAlways)
         permission?.requested = true
-        Logger.log(logSwitch, logMessage: "\t [LocationServiceAlways] Request")
+        PermissionCenterLogger.log(logSwitch, logMessage: "\t [LocationServiceAlways] Request")
         locationManager.requestAlwaysAuthorization()
     }
     
     override func requestFallback(){
-        Logger.log(logSwitch, logMessage: "\t [LocationServiceAlways] Request Fallback")
+        PermissionCenterLogger.log(logSwitch, logMessage: "\t [LocationServiceAlways] Request Fallback")
         UIApplication.sharedApplication().openURL(NSURL(string: UIApplicationOpenSettingsURLString)!)
     }
     
